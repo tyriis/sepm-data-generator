@@ -281,10 +281,10 @@ for (booking of bookings) {
 }
 sql += ')\nWHERE NOT EXISTS(SELECT * FROM BOOKING_POSTIONS)'
 */
-let sql = `DELETE * FROM BOOKING_POSTIONS;\nDELETE * FROM BOOKING;\nINSERT INTO BOOKING (ID, ROOM, GUEST_NAME, FROM_DATE, UNTIL_DATE, PAID)\n  VALUES`
+let sql = `DELETE FROM BOOKING_POSTIONS;\nDELETE FROM BOOKING;\nINSERT INTO BOOKING (ID, ROOM, GUEST_NAME, FROM_DATE, UNTIL_DATE, PAID)\n  VALUES`
 let n = 1
 for (booking of bookings) {
-    sql +=  ` (${n++}, ${booking.room}, '${booking.name}', '${formatDate(booking.from)}', '${formatDate(booking.to)}', ${Date.now() > booking.to.getTime() ? "'" +formatDate(booking.to) +"'": 'NULL'}'),\n         `
+    sql +=  ` (${n++}, ${booking.room}, '${booking.name}', '${formatDate(booking.from)}', '${formatDate(booking.to)}', ${Date.now() > booking.to.getTime() ? "'" +formatDate(booking.to) +"'": 'NULL'}),\n         `
 }
 sql = sql.trim()
 sql = sql.substring(0,sql.length -1)
