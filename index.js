@@ -58,42 +58,42 @@ let occupancy = [
     {
         from: new Date('2019-01-01'),
         to: new Date('2019-02-01'),
-        limit: limit * 0.6,
+        limit: limit * 0.4,
     },
     {
         from: new Date('2019-02-01'),
         to: new Date('2019-03-01'),
-        limit: limit * 0.6,
+        limit: limit * 0.4,
     },
     {
         from: new Date('2019-03-01'),
         to: new Date('2019-04-01'),
-        limit: limit * 0.6,
+        limit: limit * 0.3,
     },
     {
         from: new Date('2019-04-01'),
         to: new Date('2019-05-01'),
-        limit: limit * 0.7,
+        limit: limit * 0.5,
     },
     {
         from: new Date('2019-05-01'),
         to: new Date('2019-06-01'),
-        limit: limit * 0.7,
+        limit: limit * 0.5,
     },
     {
         from: new Date('2019-06-01'),
         to: new Date('2019-07-01'),
-        limit: limit * 0.6,
+        limit: limit * 0.4,
     },
     {
         from: new Date('2019-07-01'),
         to: new Date('2019-08-01'),
-        limit: limit * 0.7,
+        limit: limit,
     },
     {
         from: new Date('2019-08-01'),
         to: new Date('2019-09-01'),
-        limit: limit,
+        limit: limit * 0.1,
     },
     {
         from: new Date('2019-09-01'),
@@ -113,7 +113,7 @@ let occupancy = [
     {
         from: new Date('2019-12-01'),
         to: new Date('2020-01-01'),
-        limit: limit * 0.9,
+        limit: limit * 0.2,
     },
     {
         from: new Date('2020-01-01'),
@@ -133,6 +133,48 @@ let minDays = 1
 let bookings = []
 let minPrice = 5000
 let maxPrice = 25000
+
+/**
+ * Shuffles array in place. ES6 version
+ * @param {Array} a items An array containing the items.
+ * @link https://stackoverflow.com/a/6274381
+ */
+function shuffle(a) {
+    let j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1))
+        x = a[i]
+        a[i] = a[j]
+        a[j] = x
+    }
+    return a
+}
+
+let dayFrequency = [
+    1,1,1,1,1,
+    2,2,2,2,2,2,2,
+    3,3,3,3,3,3,3,
+    4,4,
+    5,5,5,
+    6,6,6,6,6,6,6,6,6,6,6,
+    7,7,7,7,7,7,7,7,7,7,7,7,
+    8,8,8,8,
+    9,
+    10,
+    11,
+    12,12,12,
+    13,13,13,13,
+    14,14,14,14,
+    15,15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+]
+
+dayFrequency = shuffle(dayFrequency)
 
 const DAY = 8.64e7
 const fs = require('fs')
@@ -155,7 +197,8 @@ function daysBetween(one, another) {
 
 function getFromTo() {
     let fromTime = randomIntFromInterval(from.getTime(), to.getTime())
-    let toTime = randomIntFromInterval(fromTime, (fromTime + (DAY * maxDays)))
+    let days = dayFrequency[randomIntFromInterval(0, dayFrequency.length -1)]
+    let toTime = randomIntFromInterval(fromTime, (fromTime + (DAY * days)))
     let fromDate = new Date(fromTime)
     fromDate.setHours(0)
     fromDate.setMinutes(0)
@@ -178,7 +221,8 @@ function isAvailable(room, from, to) {
     let toTime = to.getTime()
     for (let booking of room.bookings) {
         if ((fromTime >= booking.from && fromTime <= booking.to) // fromTime between from and to
-        || (toTime >= booking.from && toTime <= booking.to)) {// toTime between from and to
+        || (toTime >= booking.from && toTime <= booking.to)
+        || (fromTime <= booking.from && to >= booking.to)) {// toTime between from and to
             return false
         }
     }
@@ -187,7 +231,7 @@ function isAvailable(room, from, to) {
 }
 
 function bookRoom(room, from, to) {
-    room.bookings.push({from, to})
+    room.bookings.push({from:from.getTime(), to:to.getTime()})
 }
 
 function getAvailableRoom(from, to) {
