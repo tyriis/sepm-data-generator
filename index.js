@@ -342,8 +342,8 @@ sql = sql.substring(0,sql.length -1)
 sql += ';'
 
 fs.writeFile("bookings.sql", sql, err => {
-  if(err) {
-     return console.log(err)
-  }
-  console.log("The file was saved!")
+    if(err) {
+        return console.log(err)
+    }
+    console.log("The file was saved!")
 })
